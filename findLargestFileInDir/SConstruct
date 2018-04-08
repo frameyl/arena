@@ -1,0 +1,10 @@
+
+import SCons
+env = Environment()
+
+sources = []
+
+sources += ['impl.c']
+
+lib = env.SharedLibrary('filestat', source = sources)
+bin = env.Program('test_lib.c', LIBS='filestat', LIBPATH='.')
