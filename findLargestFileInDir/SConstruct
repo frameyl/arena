@@ -6,5 +6,6 @@ sources = []
 
 sources += ['impl.c']
 
-lib = env.SharedLibrary('filestat', source = sources)
-bin = env.Program('test_lib.c', LIBS='filestat', LIBPATH='.')
+#lib = env.SharedLibrary('filestat', source = sources)
+lib = env.StaticLibrary('filestat', source = sources)
+bin = env.Program('test_lib.c', LIBS=['filestat', 'pthread'], LIBPATH='.')

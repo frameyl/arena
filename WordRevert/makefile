@@ -24,8 +24,8 @@ CC	= $(CROSS_COMPILE)gcc
 #INC	= -I$(KBUILD_OUTPUT)/usr/include
 CFLAGS	= -Wall $(INC) $(DEBUG) $(EXTRA_CFLAGS)
 LDLIBS	= -lm -lrt $(EXTRA_LDFLAGS)
-PRG	= commd 
-OBJ	= config.o  commd.o 
+PRG	= commd
+OBJ	= config.o  commd.o
 
 OBJECTS	= $(OBJ)
 SRC	= $(OBJECTS:.o=.c)
@@ -37,7 +37,6 @@ all: $(PRG)
 
 #ptp4l: $(OBJ)
 commd: $(OBJ)
-
 
 
 clean:
