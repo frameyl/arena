@@ -19,10 +19,13 @@ static void usage(char *progname)
         progname);
 }
 
+#define BUF_SIZE    256
+#define MAX_FILESIZE    10240
+
 char * item_revert(char *item)
 {
-    char *output = malloc(1024);
-    char buf[1024] = {0};
+    char *output = malloc(MAX_FILESIZE);
+    char buf[BUF_SIZE] = {0};
 
     int column = 0;
     int i = 0;
@@ -32,22 +35,27 @@ char * item_revert(char *item)
     char *word_start = output;
     for(i=0; i<strlen(item); i++) {
         if (!isalpha(item[i])) {
-            int wordlen = strlen(&buf[1022 - column + 1]) + 1;
-            int wordstart = 1022 - column + 1;
-            int wordend = 1022;
-            if(isupper(buf[wordend])) {
-                buf[wordstart]=toupper(buf[wordstart]);
-                buf[wordend]=tolower(buf[wordend]);
+            if (column != 0) {
+                int wordstart = BUF_SIZE-column-1;
+                int wordend = BUF_SIZE-2 ;
+                int wordlen = strlen(&buf[wordstart]);
+                if(isupper(buf[wordend])) {
+                    buf[wordstart]=toupper(buf[wordstart]);
+                    buf[wordend]=tolower(buf[wordend]);
+                }
+
+                strcpy(word_start, &buf[wordstart]);
+                word_start[wordlen] = item[i];
+
+                printf("write word(%d,%d,%d): %s\n", wordstart, wordend, wordlen, &buf[wordstart]);
+                column = 0;
+                word_start += wordlen+1;
+            } else {
+                *word_start = item[i];
+                word_start ++;
             }
-
-            strcpy(word_start, &buf[wordstart]);
-            word_start[wordlen-1] = item[i];
-
-            printf("write line(%d): %s\n", wordlen, &buf[1022 - column + 1]);
-            column = 0;
-            word_start += wordlen;
         } else {
-            buf[1022 - column] = item[i];
+            buf[BUF_SIZE - column - 2] = item[i];
             column++;
             printf("shit %c\n", item[i]);
         }
@@ -61,7 +69,7 @@ char * item_revert(char *item)
 int main(int argc, char *argv[])
 {
     char *config = NULL, *progname, *result = NULL;
-    char data[1024] = {0};
+    char data[MAX_FILESIZE] = {0};
     int c;
     int running=1;
 
@@ -85,7 +93,7 @@ int main(int argc, char *argv[])
             }
     }
 
-    if (config && data_read(config, data)) {
+    if (config && data_read(config, data,MAX_FILESIZE)) {
         fprintf(stderr, "failed to read configuration file\n");
         return -1;
     }

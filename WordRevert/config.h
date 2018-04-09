@@ -5,6 +5,6 @@
 #define HAVE_CONFIG_H
 
 int write_result_file(char *result);
-int data_read(char *name,char *data);
+int data_read(char *name,char *data,int sz_data);
 
 #endif

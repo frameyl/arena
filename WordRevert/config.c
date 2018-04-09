@@ -9,11 +9,12 @@
 
 const char *status_file = "./result.txt";
 
+#define MAX_LINESIZE   1024
 
-int data_read(char *name, char *data)
+int data_read(char *name, char *data, int sz_data)
 {
     FILE *fp;
-    char line[1024] = {0};
+    char line[MAX_LINESIZE] = {0};
     int n=0;
 
     fp = 0 == strncmp(name, "-", 2) ? stdin : fopen(name, "r");
@@ -25,7 +26,10 @@ int data_read(char *name, char *data)
 
     char *linestart = data;
     while (fgets(line, sizeof(line), fp)) {
-        n = sprintf(linestart, line);
+        if (((linestart-data)+strlen(line)) > sz_data) {
+            printf("file is larger than size - %d", sz_data);
+        }
+        n = snprintf(linestart, n, line);
         linestart += n;
     }
 
@@ -35,13 +39,12 @@ int data_read(char *name, char *data)
     return 0;
 }
 
-
 int write_result_file(char *result)
 {
     if (!result) return -1;
 
     int fd;
-    if((fd=open(status_file, O_APPEND))==-1) {
+    if((fd=open(status_file, O_WRONLY|O_APPEND))==-1) {
         fprintf(stderr, "status file open failed\n");
         return -1;
     }
