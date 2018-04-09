@@ -29,7 +29,7 @@ int data_read(char *name, char *data, int sz_data)
         if (((linestart-data)+strlen(line)) > sz_data) {
             printf("file is larger than size - %d", sz_data);
         }
-        n = snprintf(linestart, n, line);
+        n = snprintf(linestart, MAX_LINESIZE, line);
         linestart += n;
     }
 
@@ -44,7 +44,7 @@ int write_result_file(char *result)
     if (!result) return -1;
 
     int fd;
-    if((fd=open(status_file, O_WRONLY|O_APPEND))==-1) {
+    if((fd=open(status_file, O_WRONLY|O_APPEND|O_CREAT))==-1) {
         fprintf(stderr, "status file open failed\n");
         return -1;
     }
