@@ -8,3 +8,5 @@
 *.out
 *.d
 .sconsign.dblite
+commd
+result.txt

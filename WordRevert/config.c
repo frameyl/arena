@@ -12,36 +12,41 @@ const char *status_file = "./result.txt";
 
 int data_read(char *name, char *data)
 {
+    FILE *fp;
+    char line[1024] = {0};
+    int n=0;
 
-	FILE *fp;
-	char line[1024];
+    fp = 0 == strncmp(name, "-", 2) ? stdin : fopen(name, "r");
 
-	fp = 0 == strncmp(name, "-", 2) ? stdin : fopen(name, "r");
+    if (!fp) {
+        perror("fopen");
+        return -1;
+    }
 
-	if (!fp) {
-		perror("fopen");
-		return -1;
-	}
+    char *linestart = data;
+    while (fgets(line, sizeof(line), fp)) {
+        n = sprintf(linestart, line);
+        linestart += n;
+    }
 
-        if (fgets(line, sizeof(line), fp)) {
-           fprintf(stdout,"data is %s",line);
-           data = line;
-        }
+    fprintf(stdout,"data is: %s",data);
 
-	fclose(fp);
-	return 0;
+    fclose(fp);
+    return 0;
 }
 
 
 int write_result_file(char *result)
 {
-       int fd;
-       if((fd=open(status_file, O_WRONLY))==-1) { 
-           fprintf(stderr, "status file open failed\n");
-           return -1;
-       }
-       write(fd,result,strlen(result));
-       close(fd);
+    if (!result) return -1;
 
-       return 0;
+    int fd;
+    if((fd=open(status_file, O_APPEND))==-1) {
+        fprintf(stderr, "status file open failed\n");
+        return -1;
+    }
+    write(fd,result,strlen(result));
+    close(fd);
+
+    return 0;
 }
